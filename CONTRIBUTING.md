@@ -1,4 +1,4 @@
-# Contributing to PSRule for Azure
+# Contributing to PSRule for Azure governed modules
 
 Welcome, and thank you for your interest in contributing to PSRule!
 
@@ -14,7 +14,7 @@ The goal of this document is to provide a high-level overview of how you can get
 This project welcomes contributions and suggestions. Most contributions require you to
 agree to a Contributor License Agreement (CLA) declaring that you have the right to,
 and actually do, grant us the rights to use your contribution. For details, visit
-https://cla.microsoft.com.
+<https://cla.microsoft.com>.
 
 When you submit a pull request, a CLA-bot will automatically determine whether you need
 to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the
@@ -35,13 +35,13 @@ Here's how you can make reporting your issue as effective as possible.
 
 ### Look for an existing issue
 
-Before you create a new issue, please do a search in [open issues][issues] to see if the issue or feature request has already been filed.
+Before you create a new issue, please do a search in [open issues][issue] to see if the issue or feature request has already been filed.
 
 If you find your issue already exists,
 make relevant comments and add your [reaction](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments).
 Use a reaction in place of a "+1" comment:
 
-* 👍 - upvote
+- 👍 - upvote
 
 ### Intro to Git and GitHub
 
@@ -55,7 +55,7 @@ Check out the links below to get started.
   - [Fork a repo][github-fork].
   - [About Pull Requests][github-pr].
 
-## Thank You!
+## Thank You
 
 Your contributions to open source, large or small, make great projects like this possible.
 Thank you for taking the time to contribute.
@@ -65,4 +65,4 @@ Thank you for taking the time to contribute.
 [github-signup]: https://github.com/signup/free
 [github-fork]: https://help.github.com/en/github/getting-started-with-github/fork-a-repo
 [github-pr]: https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests
-[github-pr-create]: https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork
+[issue]: https://github.com/Azure/PSRule.Rules.Azure-governed/issues

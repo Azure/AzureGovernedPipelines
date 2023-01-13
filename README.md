@@ -1,27 +1,46 @@
-# PSRule for Azure governed modules
+# Azure Governed Pipelines
 
 **In development**
 
-This repository contains a sample code you can use to create your own Bicep module repository.
-To learn more about PSRule for Azure, see https://aka.ms/ps-rule-azure.
+This repository contains sample code you can use to create your own governed pipelines for deploying Azure solutions.
+To learn more about PSRule for Azure, see <https://aka.ms/ps-rule-azure>.
 
 [![Use this template](https://img.shields.io/static/v1?label=GitHub&message=Use%20this%20template&logo=github&color=007acc)](https://github.com/Azure/PSRule.Rules.Azure-governed/generate)
 
-<!-- ## What's included?
+## Overview
 
-This repository includes:
+Building enterprise scale pipelines can be challenging.
+Without a standard approach, pipelines can become complex and difficult to maintain.
+Governed pipelines provides a set of patterns to help you build and maintain pipelines for deploying Azure solutions.
 
-- **Azure Templates** &mdash; Starter Azure Resource Manager (ARM) templates and parameter files.
-  - Use the files in the `template/` folder if you are using ARM templates to deploy resources.
-- **Azure Bicep** &mdash; Starter Azure Bicep deployments and test files.
-  - Use the files in the `bicep/` folder if you are using Bicep deployments and modules to deploy resources.
-- **GitHub Actions** &mdash; Starter workflow for checking Azure Infrastructure as Code (IaC).
-  - Use the files in the `.github/workflows/` to check your Azure IaC with GitHub Actions.
-  - The `ms-analyze.yaml` file can be ignore or removed as this will not execute outside this repository.
-- **Azure Pipelines** &mdash; Coming soon.
-- **Custom rules** &mdash; Example custom rules that enforce organization specific requirements.
-  - Use the files in the `.ps-rule/` folder to configure custom rules. -->
-<!-- 
+- **Who should consider using governed pipelines?** &mdash; Any organzation that need to scale one or two pipelines to many.
+- **Why use governed pipelines?** &mdash; A central set of governed pipelines allows you to managed quality and security across projects or teams.
+- **What systems are supported?** &mdash; In the current interation governed pipelines support Azure Pipelines.
+  In the future we plan to add support for GitHub Actions.
+
+## How do they work?
+
+Governed Pipelines allow an organization to enforce controls within deployment pipelines by extending on built-in features of Azure and GitHub.
+
+Pipelines **must** prove they have extended from a secure pipeline that enforces an organization's DevSecOps requirements.
+
+- When a pipeline extends from a governed pipeline it is entitled to use credentials with permissions to deploy to Azure.
+- If the pipeline does not use a governed pipeline the credentials are not provides to the pipeline and deployment is blocked.
+
+The implementation for Azure Piplines and GitHub Action is slightly different as follows:
+
+- **Azure Pipelines** &mdash; [Security through templates][1] requires a specific pipeline template to be used.
+- **GitHub Actions (available in the future)** &mdash; [Open ID Connect with reusable workflows][3] requires a specific workflow template to be used.
+
+  [1]: https://learn.microsoft.com/azure/devops/pipelines/security/templates?view=azure-devops
+  [3]: https://docs.github.com/enterprise-cloud@latest/actions/deployment/security-hardening-your-deployments/using-openid-connect-with-reusable-workflows
+
+## Getting started
+
+To get started, please check out our consumer guide for:
+
+- [Azure Pipelines](docs/consumer-azure-pipelines.md)
+
 ## Support
 
 This project uses GitHub Issues to track bugs and feature requests.
@@ -30,7 +49,10 @@ Please search the existing issues before filing new issues to avoid duplicates.
 - For new issues, file your bug or feature request as a new [issue].
 - For help, discussion, and support questions about using this project, join or start a [discussion].
 
-Support for this project/ product is limited to the resources listed above. -->
+Support for this project/ product is limited to the resources listed above.
+
+  [issue]: https://github.com/Azure/PSRule.Rules.Azure-governed/issues
+  [discussion]: https://github.com/Azure/PSRule.Rules.Azure-governed/discussion
 
 ## Contributing
 
@@ -46,7 +68,7 @@ or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any addi
 ## Maintainers
 
 - [Bernie White](https://github.com/BernieWhite)
-- [Armaan Mcleod](https://github.com/ArmaanMcleod)
+- [Sam Bell](https://github.com/ms-sambell)
 
 ## License
 
@@ -58,6 +80,3 @@ This project may contain trademarks or logos for projects, products, or services
 Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
-
-[issue]: https://github.com/Azure/PSRule.Rules.Azure-governed/issues
-[discussion]: https://github.com/Azure/PSRule.Rules.Azure-governed/discussions
