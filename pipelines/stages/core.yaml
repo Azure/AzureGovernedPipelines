@@ -43,7 +43,7 @@ parameters:
 stages:
 
 # Run prereq configuration and checks.
-- ${{ if ge(length(parameters.preflight), 1) }}:
+- ${{ if and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
   template: prereqs.yaml
   parameters:
     global: ${{ parameters.global }}
@@ -56,6 +56,13 @@ stages:
 - ${{ if ge(length(parameters.preflight), 1) }}:
   - stage: preflight
     displayName: Preflight
+
+    ${{ if coalesce(parameters.global.pool, parameters.global.pool) }}:
+      pool: ${{ coalesce(parameters.global.pool, parameters.global.pool) }}
+
+    ${{ if and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
+      dependsOn: [ prereqs ]
+
     jobs:
 
     - ${{ each job in parameters.preflight }}:
