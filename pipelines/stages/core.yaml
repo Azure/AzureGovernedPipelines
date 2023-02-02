@@ -57,6 +57,9 @@ stages:
       offical: ${{ parameters.offical }}
       prereqs: ${{ parameters.prereqs }}
 
+- ${{ each stage in parameters.stages }}:
+    - ${{ stage }}
+
 # Complete preflight testing of everything before deployment.
 - ${{ if ge(length(parameters.preflight), 1) }}:
   - stage: preflight
