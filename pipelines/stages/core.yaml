@@ -30,6 +30,11 @@ parameters:
   type: boolean
   default: false
 
+# Defines the required build pipeline stages.
+- name: stages
+  type: stageList
+  displayName: Stages
+
 # Preflight checks that are required to run before everything.
 - name: preflight
   type: jobList
