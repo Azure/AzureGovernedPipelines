@@ -1,0 +1,81 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+#
+# Core governed pipeline stages
+#
+
+# NOTE:
+# This template defines the core pipeline structure.
+
+parameters:
+
+# Defined a global configuration for the pipeline.
+- name: global
+  type: object
+  default: {}
+
+# Set fallback defaults for the pipeline.
+- name: defaults
+  type: object
+  default: {}
+
+# Defined azure configuration for the pipeline.
+- name: azure
+  type: object
+  default: {}
+
+# Determines if the pipeline is deploying to production.
+- name: offical
+  type: boolean
+  default: false
+
+# Preflight checks that are required to run before everything.
+- name: preflight
+  type: jobList
+  default: []
+
+# Defines the jobs which will run in the prereqs stage.
+- name: prereqs
+  type: jobList
+  default: []
+
+variables:
+
+# Determines if prereqs are defined and enabled.
+- name: gov_prereqs_enabled
+  readonly: true
+  value: ${{ ge(length(parameters.preflight), 1) }}
+
+stages:
+
+# Run prereq configuration and checks.
+- ${{ if variables.gov_prereqs_enabled }}:
+  template: prereqs.yaml
+  parameters:
+    global: ${{ parameters.global }}
+    defaults: ${{ parameters.defaults }}
+    azure: ${{ parameters.azure }}
+    offical: ${{ parameters.offical }}
+    prereqs: ${{ parameters.prereqs }}
+
+# Complete preflight testing of everything before deployment.
+- ${{ if ge(length(parameters.preflight), 1) }}:
+  - stage: preflight
+    displayName: Preflight
+    jobs:
+
+    - ${{ each job in parameters.preflight }}:
+      - ${{ job }}
+
+# Continue with Azure IaC stages if defined.
+- ${{ if parameters.azure.jobs }}:
+  - template: deploy.azure.yaml
+    parameters:
+      global: ${{ parameters.global }}
+      defaults: ${{ parameters.defaults }}
+      azure: ${{ parameters.azure }}
+      offical: ${{ parameters.offical }}
+
+      ${{ if ge(length(parameters.preflight), 1) }}:
+        dependsOn: preflight

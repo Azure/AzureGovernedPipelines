@@ -1,0 +1,30 @@
+#
+# Azure DevOps test deployment pipeline
+#
+
+# NOTE:
+# This pipeline consumes the standard governed pipeline.
+
+trigger: none
+pr: none
+
+parameters:
+
+# Determine if the deployment is tested with what if instead
+- name: whatif
+  displayName: What If
+  type: 'boolean'
+  default: false
+
+extends:
+  template: ../offical.yaml
+  parameters:
+    azure:
+
+      # Default to true if not specified
+      whatif: ${{ parameters.whatif }}
+
+      jobs:
+
+      - path: nnn/deploy.bicep
+        name: ''

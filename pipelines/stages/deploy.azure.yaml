@@ -1,0 +1,54 @@
+#
+# Governed pipeline stage for Azure deployments
+#
+
+# NOTE:
+# This pipeline stage can be used to deploy to Azure using Bicep.
+
+parameters:
+
+# Defined a global configuration for the pipeline.
+- name: global
+  type: object
+  default: {}
+
+# Set fallback defaults for the pipeline.
+- name: defaults
+  type: object
+  default: {}
+
+# Defined azure configuration for the pipeline.
+- name: azure
+  type: object
+  default: {}
+
+# Determines if the pipeline is deploying to production.
+- name: offical
+  type: boolean
+  default: false
+
+# Sets the stages that must run prior to these stages.
+- name: dependsOn
+  type: string
+  default: ''
+
+stages:
+
+- stage: Azure_DEV_Stage
+  dependsOn: ${{ parameters.dependsOn }}
+  jobs:
+
+  - ${{ each job in parameters.azure.jobs }}:
+    - template: ../jobs/deploy.bicep.yaml
+      parameters:
+        name: ${{ job.name }}
+        path: ${{ job.path }}
+        location: ${{ coalesce(job.location, parameters.defaults.azure.location) }}
+        whatif: ${{ coalesce(parameters.azure.whatif, parameters.defaults.azure.whatif, false) }}
+        environment: ${{ coalesce(job.environment, parameters.defaults.azure.environment) }}
+        serviceConnectionName: ${{ coalesce(job.serviceConnectionName, parameters.defaults.azure.serviceConnectionName) }}
+
+        ${{ if ne(coalesce(job.dependsOn, 'none'), 'none') }}:
+          dependsOn: ${{ job.dependsOn }}
+        ${{ if ne(coalesce(job.condition, 'none'), 'none') }}:
+          condition: ${{ job.condition }}

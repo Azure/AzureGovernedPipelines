@@ -1,0 +1,46 @@
+#
+# Azure DevOps pipeline template
+#
+
+# NOTE:
+# This standard template tests Bicep code.
+
+parameters:
+
+# The name of the baseline to use for tests
+- name: baseline
+  type: string
+  default: 'latest'
+
+# The agent image to used for the job
+- name: vmImage
+  type: 'string'
+  default: 'ubuntu-latest'
+
+jobs:
+- job: 'test_bicep_modules'
+  displayName: 'Test modules'
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  steps:
+
+  # Analyze Azure resources using PSRule for Azure
+  - task: ps-rule-assert@2
+    displayName: Analyze Azure Bicep modules
+    inputs:
+      modules: 'PSRule.Rules.Azure'
+      outputFormat: Sarif                                      # Save results using SARIF
+      outputPath: reports/code-analysis/ps-rule-results.sarif  # Save results to reports/code-analysis/ps-rule-results.sarif
+      conventions: 'Monitor.LogAnalytics.Import'
+      prerelease: true
+      ${{ if ne(parameters.baseline, 'latest') }}:
+        baseline: ${{ parameters.baseline }}
+
+    env:
+      PSRULE_CONFIGURATION_MONITOR_WORKSPACE_KEY: $(MONITORWORKSPACEKEY)
+
+  # Upload to scans tab
+  - publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
+    displayName: Upload results to scans tabs
+    artifact: CodeAnalysisLogs
+    condition: succeededOrFailed()

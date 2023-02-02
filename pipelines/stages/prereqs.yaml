@@ -1,0 +1,35 @@
+
+parameters:
+
+# Defined a global configuration for the pipeline.
+- name: global
+  type: object
+  default: {}
+
+# Set fallback defaults for the pipeline.
+- name: defaults
+  type: object
+  default: {}
+
+# Defined azure configuration for the pipeline.
+- name: azure
+  type: object
+  default: {}
+
+# Determines if the pipeline is deploying to production.
+- name: offical
+  type: boolean
+  default: false
+
+# Defines the jobs which will run in the prereqs stage.
+- name: prereqs
+  type: jobList
+  default: []
+
+stages:
+
+# Define a prereq stage that the pipeline must execute before all other stages
+- stage: gov_prereqs
+  displayName: Prereqs
+  dependsOn: []
+  jobs: ${{ parameters.prereqs }}
