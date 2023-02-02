@@ -49,13 +49,13 @@ stages:
 
 # Run prereq configuration and checks.
 - ${{ if and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
-  template: prereqs.yaml
-  parameters:
-    global: ${{ parameters.global }}
-    defaults: ${{ parameters.defaults }}
-    azure: ${{ parameters.azure }}
-    offical: ${{ parameters.offical }}
-    prereqs: ${{ parameters.prereqs }}
+    template: prereqs.yaml
+    parameters:
+      global: ${{ parameters.global }}
+      defaults: ${{ parameters.defaults }}
+      azure: ${{ parameters.azure }}
+      offical: ${{ parameters.offical }}
+      prereqs: ${{ parameters.prereqs }}
 
 # Complete preflight testing of everything before deployment.
 - ${{ if ge(length(parameters.preflight), 1) }}:
