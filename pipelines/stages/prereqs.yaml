@@ -30,6 +30,6 @@ stages:
 
 # Define a prereq stage that the pipeline must execute before all other stages
 - stage: gov_prereqs
-  displayName: Prereqs
+  displayName: 🔒 Prereqs
   dependsOn: []
   jobs: ${{ parameters.prereqs }}
