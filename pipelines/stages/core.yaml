@@ -40,17 +40,10 @@ parameters:
   type: jobList
   default: []
 
-variables:
-
-# Determines if prereqs are defined and enabled.
-- name: gov_prereqs_enabled
-  readonly: true
-  value: ${{ ge(length(parameters.preflight), 1) }}
-
 stages:
 
 # Run prereq configuration and checks.
-- ${{ if variables.gov_prereqs_enabled }}:
+- ${{ if ge(length(parameters.preflight), 1) }}:
   template: prereqs.yaml
   parameters:
     global: ${{ parameters.global }}
