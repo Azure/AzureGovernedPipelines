@@ -14,7 +14,7 @@ Without a standard approach, pipelines can become complex and difficult to maint
 Governed pipelines provides a set of patterns to help you build and maintain pipelines for deploying Azure solutions.
 
 - **Who should consider using governed pipelines?** &mdash; Any organzation that need to scale one or two pipelines to many.
-- **Why use governed pipelines?** &mdash; A central set of governed pipelines allows you to managed quality and security across projects or teams.
+- **Why use governed pipelines?** &mdash; A central set of governed pipelines allows you to manage quality and security across projects or teams.
 - **What systems are supported?** &mdash; In the current interation governed pipelines support Azure Pipelines.
   In the future we plan to add support for GitHub Actions.
 
@@ -30,10 +30,10 @@ Pipelines **must** prove they have extended from a secure pipeline that enforces
 The implementation for Azure Piplines and GitHub Action is slightly different as follows:
 
 - **Azure Pipelines** &mdash; [Security through templates][1] requires a specific pipeline template to be used.
-- **GitHub Actions (available in the future)** &mdash; [Open ID Connect with reusable workflows][3] requires a specific workflow template to be used.
+- **GitHub Actions (available in the future)** &mdash; [Open ID Connect with reusable workflows][2] requires a specific workflow template to be used.
 
   [1]: https://learn.microsoft.com/azure/devops/pipelines/security/templates?view=azure-devops
-  [3]: https://docs.github.com/enterprise-cloud@latest/actions/deployment/security-hardening-your-deployments/using-openid-connect-with-reusable-workflows
+  [2]: https://docs.github.com/enterprise-cloud@latest/actions/deployment/security-hardening-your-deployments/using-openid-connect-with-reusable-workflows
 
 ## Getting started
 
