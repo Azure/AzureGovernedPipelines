@@ -30,10 +30,10 @@ parameters:
   type: boolean
   default: false
 
-# Parameter for defining pipeline stages supplied by team.
+# Defines the required build pipeline stages.
 - name: stages
   type: stageList
-  displayName: User defined stages
+  displayName: Stages
 
 # Defines the jobs which will run in the prereqs stage.
 - name: prereqs
@@ -49,3 +49,4 @@ stages:
     azure: ${{ parameters.azure }}
     offical: ${{ parameters.offical }}
     prereqs: ${{ parameters.prereqs }}
+    stages: ${{ parameters.stages }}
