@@ -73,7 +73,7 @@ stages:
       templateContext: ${{ userStage.templateContext }}
 
     # Force prereq stage, if enabled to restrict skipping
-    ${{ if and(ne(userStage.condition, ''), ne(and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true)))) }}:
+    ${{ if and(ne(userStage.condition, ''), ne(and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true))) }}:
       condition: ${{ userStage.condition }}
     ${{ if and(ne(userStage.condition, ''), and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true))) }}:
       condition: and(eq(dependencies.gov_prereqs.result, 'Succeeded'), ${{ userStage.condition }})
