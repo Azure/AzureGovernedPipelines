@@ -70,7 +70,7 @@ stages:
     ${{ if ne(userStage.lockBehavior, '') }}:
       lockBehavior: ${{ userStage.lockBehavior }}
     ${{ if ne(userStage.templateContext, '') }}:
-      templateContext: ${{ userStage.templateContext }
+      templateContext: ${{ userStage.templateContext }}
 
     # Force prereq stage, if enabled to restrict skipping
     ${{ if and(ne(userStage.condition, ''), ne(and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true)))) }}:
