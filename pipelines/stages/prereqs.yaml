@@ -1,3 +1,12 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+#
+# Prereqs stage
+#
+
+# NOTE:
+# This template runs an prereq jobs that need to be defined.
 
 parameters:
 
@@ -30,6 +39,6 @@ stages:
 
 # Define a prereq stage that the pipeline must execute before all other stages
 - stage: gov_prereqs
-  displayName: Prereqs
+  displayName: 🔒 Prereqs
   dependsOn: []
   jobs: ${{ parameters.prereqs }}

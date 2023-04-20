@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "bewhite.psrule-vscode-preview",
-    "ms-azuretools.vscode-bicep"
+    "ms-azuretools.vscode-bicep",
+    "ms-azure-devops.azure-pipelines"
   ]
 }

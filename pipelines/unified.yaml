@@ -10,7 +10,7 @@
 
 parameters:
 
-# Defined a global configuration for the pipeline.
+# Defines a global configuration for the pipeline.
 - name: global
   type: object
   default: {}
@@ -20,7 +20,7 @@ parameters:
   type: object
   default: {}
 
-# Defined azure configuration for the pipeline.
+# Defines azure configuration for the pipeline.
 - name: azure
   type: object
   default: {}
@@ -30,10 +30,10 @@ parameters:
   type: boolean
   default: false
 
-# Parameter for defining pipeline stages supplied by team.
+# Defines the required build pipeline stages.
 - name: stages
   type: stageList
-  displayName: User defined stages
+  displayName: Stages
 
 # Defines the jobs which will run in the prereqs stage.
 - name: prereqs
@@ -42,6 +42,7 @@ parameters:
 
 stages:
 
+# Link to the core template where all stages will be defined.
 - template: stages/core.yaml
   parameters:
     global: ${{ parameters.global }}
@@ -49,3 +50,4 @@ stages:
     azure: ${{ parameters.azure }}
     offical: ${{ parameters.offical }}
     prereqs: ${{ parameters.prereqs }}
+    stages: ${{ parameters.stages }}
