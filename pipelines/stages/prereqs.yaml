@@ -47,6 +47,20 @@ stages:
   displayName: 🔒 Prereqs
   dependsOn: []
   jobs:
+  - ${{ if eq(coalesce(parameters.policy.diag.enabled, parameters.global.diag.enabled, parameters.defaults.diag.enabled, false), true) }}:
+    - job: gov_prereqs_diag
+      displayName: 🔒 Prereqs - Diagnostics
+      steps:
+        - script: |
+            echo "Policy -- ${POLICY_VAR_JSON}"
+            echo "Global -- ${GLOBAL_VAR_JSON}"
+            echo "Defaults -- ${DEFAULT_VAR_JSON}"
+          displayName: 'Output pipeline configuration'
+          env:
+            POLICY_VAR_JSON: ${{ convertToJson(parameters.policy) }}
+            GLOBAL_VAR_JSON: ${{ convertToJson(parameters.global) }}
+            DEFAULTS_VAR_JSON: ${{ convertToJson(parameters.defaults) }}
+
   - ${{ each job in parameters.prereqs }}:
     - ${{ job }}
 
