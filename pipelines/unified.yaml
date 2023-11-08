@@ -10,7 +10,7 @@
 
 parameters:
 
-# Defined list of configuration that always applies to the pipeline.
+# A defined list of configuration that always applies to the pipeline.
 - name: policy
   type: object
   default: {}

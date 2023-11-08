@@ -10,6 +10,11 @@
 
 parameters:
 
+# A defined list of configuration that always applies to the pipeline.
+- name: policy
+  type: object
+  default: {}
+
 # Defined a global configuration for the pipeline.
 - name: global
   type: object
