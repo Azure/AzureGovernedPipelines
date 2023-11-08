@@ -1,0 +1,55 @@
+
+parameters:
+
+- name: modules
+  type: string
+  default: ''
+
+- name: minimum
+  displayName: The minimum version of PSRule to use.
+  type: string
+  default: ''
+
+- name: baseline
+  type: string
+  default: 'latest'
+
+- name: conventions
+  type: string
+  default: ''
+
+- name: prerelease
+  type: boolean
+  default: false
+
+steps:
+
+# Analyze Azure resources using PSRule for Azure
+- task: ps-rule-assert@2
+  displayName: Analyze Azure Bicep modules
+  inputs:
+    ${{ if ne(parameters.modules, '') }}:
+      modules: ${{ parameters.modules }}
+
+    # Save SARIF results
+    outputFormat: Sarif
+    outputPath: reports/code-analysis/ps-rule-results.sarif
+
+    # Support pre-release
+    prerelease: ${{ parameters.prerelease }}
+
+    ${{ if ne(parameters.baseline, 'latest') }}:
+      baseline: ${{ parameters.baseline }}
+
+    ${{ if ne(parameters.conventions, '') }}:
+      conventions: ${{ parameters.conventions }}
+
+  env:
+    ${{ if ne(parameters.minimum, '') }}:
+      PSRULE_REQUIRES_PSRULE: '@pre >=${{ parameters.minimum }}'
+
+# Upload to scans tab
+- publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
+  displayName: Upload results to scans tabs
+  artifact: CodeAnalysisLogs
+  condition: succeededOrFailed()

@@ -41,4 +41,12 @@ stages:
 - stage: gov_prereqs
   displayName: 🔒 Prereqs
   dependsOn: []
-  jobs: ${{ parameters.prereqs }}
+  jobs:
+  - ${{ each job in parameters.prereqs }}:
+    - ${{ job }}
+
+  - ${{ if parameters.global.tools.psrule.enabled and parameters.global.tools.psrule.enabled == true }}:
+    - job: gov_prereqs_psrule
+      displayName: 🔒 Prereqs - PSRule
+      steps:
+      - template: ../steps/tools.ps-rule.yaml
