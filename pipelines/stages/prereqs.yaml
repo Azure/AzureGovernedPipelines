@@ -50,8 +50,8 @@ stages:
   - ${{ each job in parameters.prereqs }}:
     - ${{ job }}
 
-  # - ${{ if eq(coalesce(parameters.policy.tools.psrule.enabled, parameters.global.tools.psrule.enabled, parameters.defaults.tools.psrule.enabled, false), true) }}:
-  #   - job: gov_prereqs_psrule
-  #     displayName: 🔒 Prereqs - PSRule
-  #     steps:
-  #     - template: ../steps/tools.ps-rule.yaml
+  - ${{ if eq(coalesce(parameters.policy.tools.psrule.enabled, parameters.global.tools.psrule.enabled, parameters.defaults.tools.psrule.enabled, false), true) }}:
+    - job: gov_prereqs_psrule
+      displayName: 🔒 Prereqs - PSRule
+      steps:
+      - template: ../steps/tools.ps-rule.yaml
