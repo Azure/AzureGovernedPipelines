@@ -22,6 +22,14 @@ parameters:
   type: boolean
   default: false
 
+- name: summary
+  type: boolean
+  default: true
+
+- name: codeAnalysisLogs
+  type: boolean
+  default: true
+
 steps:
 
 # Analyze Azure resources using PSRule for Azure
@@ -48,8 +56,9 @@ steps:
     ${{ if ne(parameters.minimum, '') }}:
       PSRULE_REQUIRES_PSRULE: '@pre >=${{ parameters.minimum }}'
 
-# Upload to scans tab
-- publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
-  displayName: Upload results to scans tabs
-  artifact: CodeAnalysisLogs
-  condition: succeededOrFailed()
+- ${{ if parameters.codeAnalysisLogs }}:
+  # Upload to scans tab
+  - publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
+    displayName: Upload results to scans tabs
+    artifact: CodeAnalysisLogs
+    condition: succeededOrFailed()

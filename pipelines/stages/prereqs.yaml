@@ -67,6 +67,8 @@ stages:
 
         - ${{ if eq(coalesce(parameters.policy.tools.psrule.enabled, parameters.global.tools.psrule.enabled, parameters.defaults.tools.psrule.enabled, false), true) }}:
           - template: ../steps/tools.ps-rule.yaml
+            parameters:
+              codeAnalysisLogs: ${{ eq(coalesce(parameters.policy.prereqs.codeAnalysisLogs, parameters.global.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
 
   - ${{ if ge(length(parameters.prereqs), 1) }}:
     - ${{ each job in parameters.prereqs }}:
