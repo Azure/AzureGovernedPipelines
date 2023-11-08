@@ -10,6 +10,11 @@
 
 parameters:
 
+# Defined list of configuration that always applies to the pipeline.
+- name: policy
+  type: object
+  default: {}
+
 # Defines a global configuration for the pipeline.
 - name: global
   type: object
@@ -45,6 +50,7 @@ stages:
 # Link to the core template where all stages will be defined.
 - template: stages/core.yaml
   parameters:
+    policy: ${{ parameters.policy }}
     global: ${{ parameters.global }}
     defaults: ${{ parameters.defaults }}
     azure: ${{ parameters.azure }}
