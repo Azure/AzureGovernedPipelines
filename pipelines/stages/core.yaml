@@ -53,7 +53,7 @@ parameters:
 stages:
 
 # Run prereq configuration and checks.
-- ${{ if and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
+- ${{ if coalesce(parameters.policy.prereqs.enabled, parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
     template: prereqs.yaml
     parameters:
       policy: ${{ parameters.policy }}
