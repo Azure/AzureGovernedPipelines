@@ -45,7 +45,7 @@ stages:
   - ${{ each job in parameters.prereqs }}:
     - ${{ job }}
 
-  - ${{ if parameters.global.tools.psrule.enabled and parameters.global.tools.psrule.enabled == true }}:
+  - ${{ if eq(parameters.global.tools.psrule.enabled, true) }}:
     - job: gov_prereqs_psrule
       displayName: 🔒 Prereqs - PSRule
       steps:
