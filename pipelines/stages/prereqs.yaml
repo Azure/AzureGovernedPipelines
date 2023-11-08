@@ -10,6 +10,11 @@
 
 parameters:
 
+# Defined list of configuration that always applies to the pipeline.
+- name: policy
+  type: object
+  default: {}
+
 # Defined a global configuration for the pipeline.
 - name: global
   type: object
@@ -45,7 +50,7 @@ stages:
   - ${{ each job in parameters.prereqs }}:
     - ${{ job }}
 
-  - ${{ if eq(parameters.global.tools.psrule.enabled, true) }}:
+  - ${{ if eq(coalesce(parameters.policy.tools.psrule.enabled, parameters.global.tools.psrule.enabled, parameters.defaults.tools.psrule.enabled, false), true) }}:
     - job: gov_prereqs_psrule
       displayName: 🔒 Prereqs - PSRule
       steps:
