@@ -54,7 +54,7 @@ stages:
       - checkout: self
         fetchDepth: 0
         displayName: Checkout repository
-      
+
       - ${{ if eq(coalesce(parameters.policy.diag.enabled, parameters.global.diag.enabled, parameters.defaults.diag.enabled, false), true) }}:
         - script: |
             echo "Policy -- ${POLICY_VAR_JSON}"
@@ -71,6 +71,6 @@ stages:
           parameters:
             codeAnalysisLogs: ${{ eq(coalesce(parameters.policy.prereqs.codeAnalysisLogs, parameters.global.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
 
-  - ${{ if ge(length(parameters.prereqs), 1) }}:
-    - ${{ each job in parameters.prereqs }}:
-      - ${{ job }}
+  # - ${{ if ge(length(parameters.prereqs), 1) }}:
+  #   - ${{ each job in parameters.prereqs }}:
+  #     - ${{ job }}
