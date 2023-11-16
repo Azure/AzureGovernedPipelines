@@ -89,14 +89,18 @@ stages:
         condition: ${{ userStage.condition }}
 
     # Inject dependencies
-    ${{ if ne(userStage.dependsOn, '') }}:
-      dependsOn:
-      - gov_prereqs
-      - ${{ each dependency in userStage.dependsOn }}:
-        - ${{ dependency }}
+    ${{ if coalesce(parameters.policy.prereqs.enabled, parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
+      ${{ if ne(userStage.dependsOn, '') }}:
+        dependsOn:
+        - gov_prereqs
+        - ${{ each dependency in userStage.dependsOn }}:
+          - ${{ dependency }}
+      ${{ else }}:
+        dependsOn:
+        - gov_prereqs
     ${{ else }}:
-      dependsOn:
-      - gov_prereqs
+      ${{ if ne(userStage.dependsOn, '') }}:
+        dependsOn: ${{ userStage.dependsOn }}
 
     jobs: ${{ userStage.jobs }}
     # - ${{ stage }}
