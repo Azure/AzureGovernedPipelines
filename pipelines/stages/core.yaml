@@ -54,14 +54,14 @@ stages:
 
 # Run prereq configuration and checks.
 - ${{ if coalesce(parameters.policy.prereqs.enabled, parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
-    template: prereqs.yaml
-    parameters:
-      policy: ${{ parameters.policy }}
-      global: ${{ parameters.global }}
-      defaults: ${{ parameters.defaults }}
-      azure: ${{ parameters.azure }}
-      offical: ${{ parameters.offical }}
-      prereqs: ${{ parameters.prereqs }}
+    - template: prereqs.yaml
+      parameters:
+        policy: ${{ parameters.policy }}
+        global: ${{ parameters.global }}
+        defaults: ${{ parameters.defaults }}
+        azure: ${{ parameters.azure }}
+        offical: ${{ parameters.offical }}
+        prereqs: ${{ parameters.prereqs }}
 
 # Inject in user defined stages
 - ${{ each userStage in parameters.stages }}:
