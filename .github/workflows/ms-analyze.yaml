@@ -28,9 +28,9 @@ jobs:
     if: github.repository == 'Azure/PSRule.Rules.Azure-governed'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run PSRule analysis
-        uses: microsoft/ps-rule@v2.7.0
+        uses: microsoft/ps-rule@v2.9.0
         with:
           modules: PSRule.Rules.MSFT.OSS
