@@ -56,6 +56,15 @@ steps:
     ${{ if ne(parameters.minimum, '') }}:
       PSRULE_REQUIRES_PSRULE: '@pre >=${{ parameters.minimum }}'
 
+    ${{ if ne(variables['BICEPREGISTRYCLIENTID'], 'BICEPREGISTRYCLIENTID') }}:
+      AZURE_CLIENT_ID: $(BICEPREGISTRYCLIENTID)
+
+    ${{ if ne(variables['BICEPREGISTRYTENANTID'], 'BICEPREGISTRYTENANTID') }}:
+      AZURE_TENANT_ID: $(BICEPREGISTRYTENANTID)
+
+    ${{ if ne(variables['BICEPREGISTRYCLIENTSECRET'], 'BICEPREGISTRYCLIENTSECRET') }}:
+      AZURE_CLIENT_SECRET: $(BICEPREGISTRYCLIENTSECRET)
+
 - ${{ if parameters.codeAnalysisLogs }}:
   # Upload to scans tab
   - publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
