@@ -3,9 +3,14 @@
 #
 
 parameters:
+
 - name: break
   type: boolean
   default: false
+
+- name: codeAnalysisLogs
+  type: boolean
+  default: true
 
 steps:
 

@@ -73,9 +73,7 @@ stages:
         - template: ../steps/tools.dfd.yaml
           parameters:
             codeAnalysisLogs: ${{ eq(coalesce(parameters.policy.prereqs.codeAnalysisLogs, parameters.global.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
-            modules: ${{ coalesce(parameters.policy.tools.psrule.modules, parameters.global.tools.psrule.modules, parameters.defaults.tools.psrule.modules, '') }}
-            baseline: ${{ coalesce(parameters.policy.tools.psrule.baseline, parameters.global.tools.psrule.baseline, parameters.defaults.tools.psrule.baseline, '') }}
-            conventions: ${{ coalesce(parameters.policy.tools.psrule.conventions, parameters.global.tools.psrule.conventions, parameters.defaults.tools.psrule.conventions, '') }}
+            break: ${{ coalesce(parameters.policy.tools.dfd.break, parameters.global.tools.dfd.break, parameters.defaults.tools.dfd.break, false) }}
 
       - ${{ if eq(coalesce(parameters.policy.tools.psrule.enabled, parameters.global.tools.psrule.enabled, parameters.defaults.tools.psrule.enabled, false), true) }}:
         - template: ../steps/tools.ps-rule.yaml
