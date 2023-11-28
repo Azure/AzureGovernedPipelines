@@ -1,0 +1,15 @@
+#
+# Tool configuration for Defender for DevOps.
+#
+
+parameters:
+- name: break
+  type: boolean
+  default: false
+
+steps:
+
+- task: MicrosoftSecurityDevOps@1
+  displayName: 'Microsoft Security DevOps'
+  inputs:
+    break: ${{ parameters.break }}
