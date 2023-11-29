@@ -68,8 +68,6 @@ stages:
             echo "Global -- ${GLOBAL_VAR_JSON}"
             echo "Defaults -- ${DEFAULT_VAR_JSON}"
             echo "Settings -- ${SETTINGS_VAR_JSON}"
-            
-            
           displayName: 'Output pipeline configuration'
           env:
             GLOBAL_VAR_JSON: ${{ convertToJson(parameters.global) }}
