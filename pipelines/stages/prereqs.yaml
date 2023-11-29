@@ -65,14 +65,16 @@ stages:
       # Output diagnostic information to the logs.
       - ${{ if eq(coalesce(parameters.global.diag.enabled, parameters.settings.diag.enabled, parameters.defaults.diag.enabled, false), true) }}:
         - script: |
-            echo "Policy -- ${POLICY_VAR_JSON}"
             echo "Global -- ${GLOBAL_VAR_JSON}"
             echo "Defaults -- ${DEFAULT_VAR_JSON}"
+            echo "Settings -- ${SETTINGS_VAR_JSON}"
+            
+            
           displayName: 'Output pipeline configuration'
           env:
-            POLICY_VAR_JSON: ${{ convertToJson(parameters.policy) }}
             GLOBAL_VAR_JSON: ${{ convertToJson(parameters.global) }}
             DEFAULTS_VAR_JSON: ${{ convertToJson(parameters.defaults) }}
+            SETTINGS_VAR_JSON: ${{ convertToJson(parameters.settings) }}
 
       # Create directory for code scanning results.
       - ${{ if eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}:
