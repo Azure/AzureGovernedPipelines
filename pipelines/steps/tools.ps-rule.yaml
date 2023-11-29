@@ -68,9 +68,9 @@ steps:
     ${{ if ne(variables['BICEPREGISTRYCLIENTSECRET'], 'BICEPREGISTRYCLIENTSECRET') }}:
       AZURE_CLIENT_SECRET: $(BICEPREGISTRYCLIENTSECRET)
 
-- ${{ if parameters.codeAnalysisLogs }}:
-  # Upload to scans tab
-  - publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
-    displayName: Upload results to scans tabs
-    artifact: CodeAnalysisLogs
-    condition: succeededOrFailed()
+# - ${{ if parameters.codeAnalysisLogs }}:
+#   # Upload to scans tab
+#   - publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
+#     displayName: Upload results to scans tabs
+#     artifact: CodeAnalysisLogs
+#     condition: succeededOrFailed()

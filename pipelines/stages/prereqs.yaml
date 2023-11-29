@@ -83,6 +83,12 @@ stages:
             baseline: ${{ coalesce(parameters.policy.tools.psrule.baseline, parameters.global.tools.psrule.baseline, parameters.defaults.tools.psrule.baseline, '') }}
             conventions: ${{ coalesce(parameters.policy.tools.psrule.conventions, parameters.global.tools.psrule.conventions, parameters.defaults.tools.psrule.conventions, '') }}
 
+      - ${{ if eq(coalesce(parameters.policy.prereqs.codeAnalysisLogs, parameters.global.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}:
+        # Upload to scans tab
+        - publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
+          displayName: Upload results to scans tabs
+          artifact: CodeAnalysisLogs
+          condition: succeededOrFailed()
 
   - ${{ if ge(length(parameters.prereqs), 1) }}:
     - ${{ each job in parameters.prereqs }}:
