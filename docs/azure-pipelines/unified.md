@@ -4,6 +4,8 @@ The unified pipeline is a pipeline template that can be used to create a governe
 Using this template, you can accelerate adoption of governed pipelines used by your organization to deploy to Azure.
 The template is designed to be used with the [Security through templates][1] feature of Azure Pipelines.
 
+The unified pipeline is not intended to be used directly.
+
 While the template provides a default configuration, it can be customized to meet the needs of your organization.
 For example, enforce third-party DevSecOps tools, or add custom stages to the pipeline.
 
@@ -27,20 +29,43 @@ The following features are included:
 
 ## Usage
 
-To use the unified pipeline, add the following to your pipeline YAML:
+To use the unified pipeline, define your governed pipeline YAML by using it as a stage template.
+The governed pipeline you define will be extended by each consuming pipeline.
+This approach allows you to define mandatory controls that can not be overriden by consuming pipelines.
 
 ```yaml
-extends:
-  template: your-template.yml@GovernedPipelines
-  parameters:
-    # Define mandatory options here.
-    global: {}
+parameters:
+  # Settings are exposed to consuming pipelines to allow customization of options.
+  - name: settings
+    type: object
+    default: {}
 
-    # Define default options here.
-    defaults: {}
+  # Stages are exposed to consuming pipelines to allow customization of stages.
+  - name: stages
+    type: stageList
+    default: []
 
-    # Customize the pipeline here by specifying parameters
-    stages: []
+resources:
+  repositories:
+    - repository: AzureGovernedPipelines
+      type: github
+      name: Azure/AzureGovernedPipelines
+      ref: refs/tags/v1.0.0
+
+stages:
+  - template: pipelines/unified.yml@AzureGovernedPipelines
+    parameters:
+      # Define mandatory options here.
+      global: {}
+
+      # Define option defaults here.
+      defaults: {}
+
+      # Allow consuming pipelines to override.
+      settings: ${{ parameters.settings }}
+
+      # Allow consuming pipelines to customize stages.
+      stages: ${{ parameters.stages }}
 ```
 
 Continue reading for more information on the avilaible parameters for customization.
@@ -51,7 +76,7 @@ The unified pipeline supports the following parameters for customization.
 
 ### `global`
 
-Allows configuration of options within the governed pipeline.
+Allows configuration of options within the governed pipeline that are enforced to all pipelines.
 Options configured here will override options specified in `defaults` and `settings`.
 
 To default a configuration option but allow it to be overridden, specify the option in `defaults` instead.
@@ -60,7 +85,7 @@ For a list of configuration options see [Options](#options).
 
 ### `defaults`
 
-Allows configuration of options within the governed pipeline.
+Allows configuration of option defaults for the governed pipeline.
 Options configured here will be the default for all consuming pipelines.
 Consuming pipelines can override the default by specifying the option in `settings`.
 
@@ -70,13 +95,50 @@ For a list of configuration options see [Options](#options).
 
 ### `settings`
 
-Allows configuration of options within the governed pipeline.
+Allows configuration of options within the governed pipeline by consuming pipelines.
 Options configured here can be overriden by consuming pipelines.
 For example, you may want to allow a pipeline turn on or off a feature.
 
 When not specified, the effective configuration will be inherited from `defaults` unless the option is specified in `global`.
 
 For a list of configuration options see [Options](#options).
+
+When defining your governed pipeline, expose this parameter to allow consuming pipelines to override options.
+
+```yaml
+parameters:
+  # Settings are exposed to consuming pipelines to allow customization of options.
+  - name: settings
+    type: object
+    default: {}
+
+  # Stages are exposed to consuming pipelines to allow customization of stages.
+  - name: stages
+    type: stageList
+    default: []
+
+resources:
+  repositories:
+    - repository: AzureGovernedPipelines
+      type: github
+      name: Azure/AzureGovernedPipelines
+      ref: refs/tags/v1.0.0
+
+extends:
+  - template: pipelines/unified.yml@AzureGovernedPipelines
+    parameters:
+      # Define mandatory options here.
+      global: {}
+
+      # Define option defaults here.
+      defaults: {}
+
+      # Allow consuming pipelines to override.
+      settings: ${{ parameters.settings }}
+
+      # Allow consuming pipelines to customize stages.
+      stages: ${{ parameters.stages }}
+```
 
 ### `stages`
 

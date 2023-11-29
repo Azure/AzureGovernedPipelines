@@ -10,18 +10,18 @@
 
 parameters:
 
-# A defined list of configuration that always applies to the pipeline.
+# Allows configuration of options within the governed pipeline that are enforced to all pipelines.
 - name: global
   type: object
   default: {}
 
-# Defined a global configuration for the pipeline.
-- name: settings
+# Allows configuration of option defaults for the governed pipeline.
+- name: defaults
   type: object
   default: {}
 
-# Set fallback defaults for the pipeline.
-- name: defaults
+# Allows configuration of options within the governed pipeline by consuming pipelines.
+- name: settings
   type: object
   default: {}
 
