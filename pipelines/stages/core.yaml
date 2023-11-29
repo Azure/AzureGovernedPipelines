@@ -53,7 +53,7 @@ parameters:
 stages:
 
 # Run prereq configuration and checks.
-- ${{ if coalesce(parameters.policy.prereqs.enabled, parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
+- ${{ if coalesce(parameters.global.prereqs.enabled, parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
     - template: prereqs.yaml
       parameters:
         policy: ${{ parameters.policy }}
@@ -79,7 +79,7 @@ stages:
       templateContext: ${{ userStage.templateContext }}
 
     # Force prereq stage, if enabled to restrict skipping
-    ${{ if coalesce(parameters.policy.prereqs.enabled, parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
+    ${{ if coalesce(parameters.global.prereqs.enabled, parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
       ${{ if ne(userStage.condition, '') }}:
         condition: and(eq(dependencies.gov_prereqs.result, 'Succeeded'), ${{ userStage.condition }})
       ${{ else }}:
@@ -89,7 +89,7 @@ stages:
         condition: ${{ userStage.condition }}
 
     # Inject dependencies
-    ${{ if coalesce(parameters.policy.prereqs.enabled, parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
+    ${{ if coalesce(parameters.global.prereqs.enabled, parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
       ${{ if ne(userStage.dependsOn, '') }}:
         dependsOn:
         - gov_prereqs
@@ -104,7 +104,7 @@ stages:
 
     jobs: ${{ userStage.jobs }}
     # - ${{ stage }}
-    # ${{ if and(coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
+    # ${{ if and(coalesce(parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
       # condition: in(dependencies.A.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
 
 # Complete preflight testing of everything before deployment.
@@ -112,10 +112,10 @@ stages:
   - stage: preflight
     displayName: Preflight
 
-    ${{ if coalesce(parameters.global.pool, parameters.global.pool) }}:
-      pool: ${{ coalesce(parameters.global.pool, parameters.global.pool) }}
+    ${{ if coalesce(parameters.settings.pool, parameters.settings.pool) }}:
+      pool: ${{ coalesce(parameters.settings.pool, parameters.settings.pool) }}
 
-    ${{ if and(ge(length(parameters.prereqs), 1), coalesce(parameters.global.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
+    ${{ if and(ge(length(parameters.prereqs), 1), coalesce(parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
       dependsOn: [ prereqs ]
 
     jobs:

@@ -1,6 +1,27 @@
-# Unified pipelines
+# Unified pipeline
 
-Using the Unified pipeline within Azure DevOps.
+The unified pipeline is a pipeline template that can be used to create a governed pipeline.
+Using this template, you can accelerate adoption of governed pipelines used by your organization to deploy to Azure.
+The template is designed to be used with the [Security through templates][1] feature of Azure Pipelines.
+
+While the template provides a default configuration, it can be customized to meet the needs of your organization.
+For example, enforce third-party DevSecOps tools, or add custom stages to the pipeline.
+
+  [1]: https://learn.microsoft.com/azure/devops/pipelines/security/templates?view=azure-devops
+
+## Usage
+
+To use the unified pipeline, add the following to your pipeline YAML:
+
+```yaml
+extends:
+  template: your-template.yml@GovernedPipelines
+  parameters:
+    # Customize the pipeline here by specifying parameters
+    stages: []
+```
+
+Continue reading for more information on the avilaible parameters for customization.
 
 ## Parameters
 
@@ -15,7 +36,32 @@ For a list of configuration options see [Options](#options).
 The `defaults` parameter allows configuration of the global pipeline and provides the same options as `global`.
 This parameter differs from `global` because it allow you to configure the default behaviour when an option in `global` is not set.
 
-### `azure`
+### `settings`
+
+The `settings` parameter allows configuration of the governed pipeline options by consuming pipelines.
+For example, you may want to allow a pipeline turn on or off a feature.
+
+### `stages`
+
+Allows consuming pipelines to add additional stages to the pipeline.
+To configure pipeline stages, the consuming pipeline will specify a list of stages to add.
+
+For example, to add a stage named `build`:
+
+```yaml
+extends:
+  template: your-template.yml@GovernedPipelines
+  parameters:
+    stages:
+      - stage: build_stage
+        displayName: Build
+        jobs:
+          - job: build_job
+            displayName: Build
+            steps:
+              - script: echo Hello, world!
+                displayName: 'Run an example script'
+```
 
 ## Options
 

@@ -63,7 +63,7 @@ stages:
         displayName: Checkout governed pipelines repository
 
       # Output diagnostic information to the logs.
-      - ${{ if eq(coalesce(parameters.policy.diag.enabled, parameters.global.diag.enabled, parameters.defaults.diag.enabled, false), true) }}:
+      - ${{ if eq(coalesce(parameters.global.diag.enabled, parameters.settings.diag.enabled, parameters.defaults.diag.enabled, false), true) }}:
         - script: |
             echo "Policy -- ${POLICY_VAR_JSON}"
             echo "Global -- ${GLOBAL_VAR_JSON}"
@@ -75,28 +75,28 @@ stages:
             DEFAULTS_VAR_JSON: ${{ convertToJson(parameters.defaults) }}
 
       # Create directory for code scanning results.
-      - ${{ if eq(coalesce(parameters.policy.prereqs.codeAnalysisLogs, parameters.global.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}:
+      - ${{ if eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}:
         - pwsh: |
             $Null = New-Item -Path $(GOV_PREREQS_RESULTS_PATH) -ItemType Directory -Force;
           displayName: Create results directory
 
       # Run Defender for DevOps tool scan if enabled.
-      - ${{ if eq(coalesce(parameters.policy.tools.dfd.enabled, parameters.global.tools.dfd.enabled, parameters.defaults.tools.dfd.enabled, false), true) }}:
+      - ${{ if eq(coalesce(parameters.global.tools.dfd.enabled, parameters.settings.tools.dfd.enabled, parameters.defaults.tools.dfd.enabled, false), true) }}:
         - template: ../steps/tools.dfd.yaml
           parameters:
-            codeAnalysisLogs: ${{ eq(coalesce(parameters.policy.prereqs.codeAnalysisLogs, parameters.global.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
-            break: ${{ coalesce(parameters.policy.tools.dfd.break, parameters.global.tools.dfd.break, parameters.defaults.tools.dfd.break, false) }}
+            codeAnalysisLogs: ${{ eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
+            break: ${{ coalesce(parameters.global.tools.dfd.break, parameters.settings.tools.dfd.break, parameters.defaults.tools.dfd.break, false) }}
 
       # Run PSRule for Azure tool scan if enabled.
-      - ${{ if eq(coalesce(parameters.policy.tools.psrule.enabled, parameters.global.tools.psrule.enabled, parameters.defaults.tools.psrule.enabled, false), true) }}:
+      - ${{ if eq(coalesce(parameters.global.tools.psrule.enabled, parameters.settings.tools.psrule.enabled, parameters.defaults.tools.psrule.enabled, false), true) }}:
         - template: ../steps/tools.ps-rule.yaml
           parameters:
-            codeAnalysisLogs: ${{ eq(coalesce(parameters.policy.prereqs.codeAnalysisLogs, parameters.global.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
-            modules: ${{ coalesce(parameters.policy.tools.psrule.modules, parameters.global.tools.psrule.modules, parameters.defaults.tools.psrule.modules, '') }}
-            baseline: ${{ coalesce(parameters.policy.tools.psrule.baseline, parameters.global.tools.psrule.baseline, parameters.defaults.tools.psrule.baseline, '') }}
-            conventions: ${{ coalesce(parameters.policy.tools.psrule.conventions, parameters.global.tools.psrule.conventions, parameters.defaults.tools.psrule.conventions, '') }}
+            codeAnalysisLogs: ${{ eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
+            modules: ${{ coalesce(parameters.global.tools.psrule.modules, parameters.settings.tools.psrule.modules, parameters.defaults.tools.psrule.modules, '') }}
+            baseline: ${{ coalesce(parameters.global.tools.psrule.baseline, parameters.settings.tools.psrule.baseline, parameters.defaults.tools.psrule.baseline, '') }}
+            conventions: ${{ coalesce(parameters.global.tools.psrule.conventions, parameters.settings.tools.psrule.conventions, parameters.defaults.tools.psrule.conventions, '') }}
 
-      - ${{ if eq(coalesce(parameters.policy.prereqs.codeAnalysisLogs, parameters.global.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}:
+      - ${{ if eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}:
         # Upload to scans tab
         - publish: $(GOV_PREREQS_RESULTS_PATH)
           displayName: Upload results to scans tabs
