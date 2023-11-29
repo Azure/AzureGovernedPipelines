@@ -56,8 +56,8 @@ stages:
 - ${{ if coalesce(parameters.global.prereqs.enabled, parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
     - template: prereqs.yaml
       parameters:
-        policy: ${{ parameters.policy }}
         global: ${{ parameters.global }}
+        settings: ${{ parameters.settings }}
         defaults: ${{ parameters.defaults }}
         azure: ${{ parameters.azure }}
         offical: ${{ parameters.offical }}
