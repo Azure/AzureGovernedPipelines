@@ -35,16 +35,16 @@ parameters:
 
 steps:
 
-# Analyze Azure resources using PSRule for Azure
+# Add the PSRule for Azure task into the pipeline.
 - task: ps-rule-assert@2
-  displayName: Analyze Azure Bicep modules
+  displayName: Run PSRule for Azure scan
   inputs:
     ${{ if ne(parameters.modules, '') }}:
       modules: ${{ parameters.modules }}
 
     # Save SARIF results
     outputFormat: Sarif
-    outputPath: reports/code-analysis/ps-rule-results.sarif
+    outputPath: $(GOV_PREREQS_RESULTS_PATH)ps-rule-results.sarif
 
     # Support pre-release
     prerelease: ${{ parameters.prerelease }}
@@ -67,10 +67,3 @@ steps:
 
     ${{ if ne(variables['BICEPREGISTRYCLIENTSECRET'], 'BICEPREGISTRYCLIENTSECRET') }}:
       AZURE_CLIENT_SECRET: $(BICEPREGISTRYCLIENTSECRET)
-
-# - ${{ if parameters.codeAnalysisLogs }}:
-#   # Upload to scans tab
-#   - publish: $(System.DefaultWorkingDirectory)/reports/code-analysis/
-#     displayName: Upload results to scans tabs
-#     artifact: CodeAnalysisLogs
-#     condition: succeededOrFailed()
