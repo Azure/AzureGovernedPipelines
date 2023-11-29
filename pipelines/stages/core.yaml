@@ -1,0 +1,136 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+#
+# Core governed pipeline stages
+#
+
+# NOTE:
+# This template defines the core pipeline structure.
+
+parameters:
+
+# Allows configuration of options within the governed pipeline that are enforced to all pipelines.
+- name: global
+  type: object
+  default: {}
+
+# Allows configuration of option defaults for the governed pipeline.
+- name: defaults
+  type: object
+  default: {}
+
+# Allows configuration of options within the governed pipeline by consuming pipelines.
+- name: settings
+  type: object
+  default: {}
+
+# Defined azure configuration for the pipeline.
+- name: azure
+  type: object
+  default: {}
+
+# Determines if the pipeline is deploying to production.
+- name: offical
+  type: boolean
+  default: false
+
+# Defines the required build pipeline stages.
+- name: stages
+  type: stageList
+  displayName: Stages
+
+# Preflight checks that are required to run before everything.
+- name: preflight
+  type: jobList
+  default: []
+
+# Defines the jobs which will run in the prereqs stage.
+- name: prereqs
+  type: jobList
+  default: []
+
+stages:
+
+# Run prereq configuration and checks.
+- ${{ if coalesce(parameters.global.prereqs.enabled, parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
+    - template: prereqs.yaml
+      parameters:
+        global: ${{ parameters.global }}
+        settings: ${{ parameters.settings }}
+        defaults: ${{ parameters.defaults }}
+        azure: ${{ parameters.azure }}
+        offical: ${{ parameters.offical }}
+        prereqs: ${{ parameters.prereqs }}
+
+# Inject in user defined stages
+- ${{ each userStage in parameters.stages }}:
+  - stage: ${{ userStage.stage }}
+    # Remap top level properties to keep
+    ${{ if ne(userStage.displayName, '') }}:
+      displayName: ${{ userStage.displayName }}
+    ${{ if ne(userStage.variables, '') }}:
+      variables: ${{ userStage.variables }}
+    ${{ if ne(userStage.pool, '') }}:
+      pool: ${{ userStage.pool }}
+    ${{ if ne(userStage.lockBehavior, '') }}:
+      lockBehavior: ${{ userStage.lockBehavior }}
+    ${{ if ne(userStage.templateContext, '') }}:
+      templateContext: ${{ userStage.templateContext }}
+
+    # Force prereq stage, if enabled to restrict skipping
+    ${{ if coalesce(parameters.global.prereqs.enabled, parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
+      ${{ if ne(userStage.condition, '') }}:
+        condition: and(eq(dependencies.gov_prereqs.result, 'Succeeded'), ${{ userStage.condition }})
+      ${{ else }}:
+        condition: eq(dependencies.gov_prereqs.result, 'Succeeded')
+    ${{ else }}:
+      ${{ if ne(userStage.condition, '') }}:
+        condition: ${{ userStage.condition }}
+
+    # Inject dependencies
+    ${{ if coalesce(parameters.global.prereqs.enabled, parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, false) }}:
+      ${{ if ne(userStage.dependsOn, '') }}:
+        dependsOn:
+        - gov_prereqs
+        - ${{ each dependency in userStage.dependsOn }}:
+          - ${{ dependency }}
+      ${{ else }}:
+        dependsOn:
+        - gov_prereqs
+    ${{ else }}:
+      ${{ if ne(userStage.dependsOn, '') }}:
+        dependsOn: ${{ userStage.dependsOn }}
+
+    jobs: ${{ userStage.jobs }}
+    # - ${{ stage }}
+    # ${{ if and(coalesce(parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
+      # condition: in(dependencies.A.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+
+# Complete preflight testing of everything before deployment.
+- ${{ if ge(length(parameters.preflight), 1) }}:
+  - stage: preflight
+    displayName: Preflight
+
+    ${{ if coalesce(parameters.settings.pool, parameters.settings.pool) }}:
+      pool: ${{ coalesce(parameters.settings.pool, parameters.settings.pool) }}
+
+    ${{ if and(ge(length(parameters.prereqs), 1), coalesce(parameters.settings.prereqs.enabled, parameters.defaults.prereqs.enabled, true)) }}:
+      dependsOn: [ prereqs ]
+
+    jobs:
+
+    - ${{ each job in parameters.preflight }}:
+      - ${{ job }}
+
+# Continue with Azure IaC stages if defined.
+- ${{ if parameters.azure.jobs }}:
+  - template: deploy.azure.yaml
+    parameters:
+      global: ${{ parameters.global }}
+      defaults: ${{ parameters.defaults }}
+      azure: ${{ parameters.azure }}
+      offical: ${{ parameters.offical }}
+
+      ${{ if ge(length(parameters.preflight), 1) }}:
+        dependsOn: preflight

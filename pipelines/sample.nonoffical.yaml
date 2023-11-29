@@ -1,0 +1,30 @@
+#
+# Sample Azure DevOps governed pipeline
+#
+
+# NOTE:
+# This is an example pipeline to demonstrate customizing the unified pipeline.
+
+parameters:
+
+# Defined a global configuration for the pipeline.
+- name: global
+  type: object
+  default: {}
+
+# Defined azure configuration for the pipeline.
+- name: azure
+  type: object
+  default: {}
+
+stages:
+
+- template: unified.yaml
+  parameters:
+    global: ${{ parameters.global }}
+    azure: ${{ parameters.azure }}
+    defaults:
+      azure:
+        whatif: false
+        location: 'eastus'
+    offical: false

@@ -1,0 +1,69 @@
+#
+# Tool configuration for PSRule for Azure.
+#
+
+parameters:
+
+- name: modules
+  type: string
+  default: ''
+
+- name: minimum
+  displayName: The minimum version of PSRule to use.
+  type: string
+  default: ''
+
+- name: baseline
+  type: string
+  default: 'latest'
+
+- name: conventions
+  type: string
+  default: ''
+
+- name: prerelease
+  type: boolean
+  default: false
+
+- name: summary
+  type: boolean
+  default: true
+
+- name: codeAnalysisLogs
+  type: boolean
+  default: true
+
+steps:
+
+# Add the PSRule for Azure task into the pipeline.
+- task: ps-rule-assert@2
+  displayName: Run PSRule for Azure scan
+  inputs:
+    ${{ if ne(parameters.modules, '') }}:
+      modules: ${{ parameters.modules }}
+
+    # Save SARIF results
+    outputFormat: Sarif
+    outputPath: $(GOV_PREREQS_RESULTS_PATH)ps-rule-results.sarif
+
+    # Support pre-release
+    prerelease: ${{ parameters.prerelease }}
+
+    ${{ if ne(parameters.baseline, 'latest') }}:
+      baseline: ${{ parameters.baseline }}
+
+    ${{ if ne(parameters.conventions, '') }}:
+      conventions: ${{ parameters.conventions }}
+
+  env:
+    ${{ if ne(parameters.minimum, '') }}:
+      PSRULE_REQUIRES_PSRULE: '@pre >=${{ parameters.minimum }}'
+
+    ${{ if ne(variables['BICEPREGISTRYCLIENTID'], 'BICEPREGISTRYCLIENTID') }}:
+      AZURE_CLIENT_ID: $(BICEPREGISTRYCLIENTID)
+
+    ${{ if ne(variables['BICEPREGISTRYTENANTID'], 'BICEPREGISTRYTENANTID') }}:
+      AZURE_TENANT_ID: $(BICEPREGISTRYTENANTID)
+
+    ${{ if ne(variables['BICEPREGISTRYCLIENTSECRET'], 'BICEPREGISTRYCLIENTSECRET') }}:
+      AZURE_CLIENT_SECRET: $(BICEPREGISTRYCLIENTSECRET)

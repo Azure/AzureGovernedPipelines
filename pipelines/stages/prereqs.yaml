@@ -1,0 +1,108 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+#
+# Prereqs stage
+#
+
+# NOTE:
+# This template runs an prereq jobs that need to be defined.
+
+parameters:
+
+# Allows configuration of options within the governed pipeline that are enforced to all pipelines.
+- name: global
+  type: object
+  default: {}
+
+# Allows configuration of option defaults for the governed pipeline.
+- name: defaults
+  type: object
+  default: {}
+
+# Allows configuration of options within the governed pipeline by consuming pipelines.
+- name: settings
+  type: object
+  default: {}
+
+# Defined azure configuration for the pipeline.
+- name: azure
+  type: object
+  default: {}
+
+# Determines if the pipeline is deploying to production.
+- name: offical
+  type: boolean
+  default: false
+
+# Defines the jobs which will run in the prereqs stage.
+- name: prereqs
+  type: jobList
+  default: []
+
+stages:
+
+# Define a prereq stage that the pipeline must execute before all other stages
+- stage: gov_prereqs
+  displayName: 🔒 Prereqs
+  dependsOn: []
+  jobs:
+  - job: gov_prereqs_devsecops
+    displayName: 🔒 Prereqs - DevSecOps
+    variables:
+      - name: GOV_PREREQS_RESULTS_PATH
+        value: $(Build.ArtifactStagingDirectory)/code-scanning-results/
+        readonly: true
+    steps:
+      # Checkout the repository
+      - checkout: self
+        fetchDepth: 0
+        displayName: Checkout repository
+
+      - checkout: AzureGovernedPipelines
+        displayName: Checkout governed pipelines repository
+
+      # Output diagnostic information to the logs.
+      - ${{ if eq(coalesce(parameters.global.diag.enabled, parameters.settings.diag.enabled, parameters.defaults.diag.enabled, false), true) }}:
+        - script: |
+            echo "Global -- ${GLOBAL_VAR_JSON}"
+            echo "Defaults -- ${DEFAULT_VAR_JSON}"
+            echo "Settings -- ${SETTINGS_VAR_JSON}"
+          displayName: 'Output pipeline configuration'
+          env:
+            GLOBAL_VAR_JSON: ${{ convertToJson(parameters.global) }}
+            DEFAULTS_VAR_JSON: ${{ convertToJson(parameters.defaults) }}
+            SETTINGS_VAR_JSON: ${{ convertToJson(parameters.settings) }}
+
+      # Create directory for code scanning results.
+      - ${{ if eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}:
+        - pwsh: |
+            $Null = New-Item -Path $(GOV_PREREQS_RESULTS_PATH) -ItemType Directory -Force;
+          displayName: Create results directory
+
+      # Run Defender for DevOps tool scan if enabled.
+      - ${{ if eq(coalesce(parameters.global.tools.dfd.enabled, parameters.settings.tools.dfd.enabled, parameters.defaults.tools.dfd.enabled, false), true) }}:
+        - template: ../steps/tools.microsoft.dfd.yaml
+          parameters:
+            codeAnalysisLogs: ${{ eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
+            break: ${{ coalesce(parameters.global.tools.dfd.break, parameters.settings.tools.dfd.break, parameters.defaults.tools.dfd.break, false) }}
+
+      # Run PSRule for Azure tool scan if enabled.
+      - ${{ if eq(coalesce(parameters.global.tools.psrule.enabled, parameters.settings.tools.psrule.enabled, parameters.defaults.tools.psrule.enabled, false), true) }}:
+        - template: ../steps/tools.microsoft.ps-rule.yaml
+          parameters:
+            codeAnalysisLogs: ${{ eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}
+            modules: ${{ coalesce(parameters.global.tools.psrule.modules, parameters.settings.tools.psrule.modules, parameters.defaults.tools.psrule.modules, '') }}
+            baseline: ${{ coalesce(parameters.global.tools.psrule.baseline, parameters.settings.tools.psrule.baseline, parameters.defaults.tools.psrule.baseline, '') }}
+            conventions: ${{ coalesce(parameters.global.tools.psrule.conventions, parameters.settings.tools.psrule.conventions, parameters.defaults.tools.psrule.conventions, '') }}
+
+      - ${{ if eq(coalesce(parameters.global.prereqs.codeAnalysisLogs, parameters.settings.prereqs.codeAnalysisLogs, parameters.defaults.prereqs.codeAnalysisLogs, true), true) }}:
+        # Upload to scans tab
+        - publish: $(GOV_PREREQS_RESULTS_PATH)
+          displayName: Upload results to scans tabs
+          artifact: CodeAnalysisLogs
+          condition: succeededOrFailed()
+
+  - ${{ if ge(length(parameters.prereqs), 1) }}:
+    - ${{ each job in parameters.prereqs }}:
+      - ${{ job }}
