@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "**/.pipelines/**/*.yaml": "azure-pipelines",
+    "**/pipelines/**/*.yaml": "azure-pipelines"
+  },
+  "files.insertFinalNewline": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "**/.github/workflows/*.yaml"
+  }
+}

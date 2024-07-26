@@ -1,0 +1,17 @@
+#
+# PSRule for Azure configuration
+#
+
+# Please see the documentation for all configuration options:
+# https://aka.ms/ps-rule/options
+# https://aka.ms/ps-rule-azure/options
+
+output:
+  culture:
+  - 'en-US'
+
+input:
+  pathIgnore:
+  - '.vscode/'
+  - '.github/'
+  - '*.md'
