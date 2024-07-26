@@ -68,7 +68,6 @@ or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any addi
 ## Maintainers
 
 - [Bernie White](https://github.com/BernieWhite)
-- [Sam Bell](https://github.com/ms-sambell)
 
 ## License
 

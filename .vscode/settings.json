@@ -1,7 +1,7 @@
 {
   "files.associations": {
     "**/.pipelines/**/*.yaml": "azure-pipelines",
-    "**/pipelines/ado/**/*.yaml": "azure-pipelines"
+    "**/pipelines/**/*.yaml": "azure-pipelines"
   },
   "files.insertFinalNewline": true,
   "editor.tabSize": 2,

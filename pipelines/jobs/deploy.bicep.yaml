@@ -1,0 +1,118 @@
+#
+# Azure DevOps pipeline template
+#
+
+# Notes:
+# This standard template deploys Bicep code.
+
+parameters:
+
+# Name of the deployment job.
+- name: name
+  type: 'string'
+
+# The path to a .bicep file.
+- name: path
+  type: 'string'
+
+# Configures the location to run the deployment.
+- name: location
+  displayName: Location
+  type: 'string'
+  default: 'australiaeast'
+
+# The Service Connection to use.
+- name: serviceConnectionName
+  type: 'string'
+
+# Configures the environment to deploy to.
+- name: environment
+  type: 'string'
+
+# The agent image to used for the job.
+- name: vmImage
+  type: 'string'
+  default: 'ubuntu-latest'
+
+# Determine if the deployment is tested with what if instead.
+- name: whatif
+  displayName: What If
+  type: 'boolean'
+  default: false
+
+# Configures additional retries on the deployment. This can be used by exception for certain deployments such as policy.
+- name: retry
+  displayName: Retry on failure
+  type: 'number'
+  default: 0
+
+# Configures dependencies on other jobs.
+- name: dependsOn
+  displayName: Dependencies
+  type: string
+  default: ''
+
+# Deploy only if the conditions are met.
+- name: condition
+  displayName: Conditions
+  type: string
+  default: ''
+
+jobs:
+
+  # Deploy to an environment.
+  - ${{ if and(eq(parameters.whatif, false), or(eq(variables['Build.SourceBranchName'], 'main'), contains(parameters.path, 'deployments/nnn/'))) }}:
+
+    - deployment: ${{ parameters.name }}
+      displayName: 'Deploy ${{ parameters.name }}'
+      environment: ${{ parameters.environment }}
+      pool:
+        vmImage: ${{ parameters.vmImage }}
+      variables:
+        deployParams: '--location ''${{ parameters.location }}'''
+
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            # Deploy at subscription scope
+            - task: AzureCLI@2
+              displayName: 🚀 Deploy to ${{ parameters.serviceConnectionName }}
+              retryCountOnTaskFailure: ${{ parameters.retry }}
+              inputs:
+                azureSubscription: ${{ parameters.serviceConnectionName }}
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az bicep install
+                  az deployment sub create \
+                    --name '${{ parameters.name }}-$(Build.BuildNumber)' \
+                    --template-file ${{ parameters.path }} $(deployParams)
+
+  # Test deployment to an environment
+  - ${{ else }}:
+
+    - job: ${{ parameters.name }}
+      displayName: 'Checking ${{ parameters.name }}'
+      pool:
+        vmImage: ${{ parameters.vmImage }}
+      variables:
+        deployParams: '--location ''${{ parameters.location }}'''
+
+      steps:
+
+      # Deploy at subscription scope
+      - task: AzureCLI@2
+        displayName: 🧪 Checking deploy to ${{ parameters.serviceConnectionName }}
+
+        retryCountOnTaskFailure: ${{ parameters.retry }}
+        inputs:
+          azureSubscription: ${{ parameters.serviceConnectionName }}
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az bicep install
+            az deployment sub create \
+              --name '${{ parameters.name }}-$(Build.BuildNumber)' \
+              --template-file ${{ parameters.path }} $(deployParams) --what-if

@@ -1,0 +1,59 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+#
+# Unified Pipeline - Azure Governed Pipeline for Azure Pipelines
+#
+
+# NOTE:
+# This unified pipeline is used to test then deploy infrastructure and application code.
+
+parameters:
+
+# Allows configuration of options within the governed pipeline that are enforced to all pipelines.
+- name: global
+  type: object
+  default: {}
+
+# Allows configuration of option defaults for the governed pipeline.
+- name: defaults
+  type: object
+  default: {}
+
+# Allows configuration of options within the governed pipeline by consuming pipelines.
+- name: settings
+  type: object
+  default: {}
+
+# Defines azure configuration for the pipeline.
+- name: azure
+  type: object
+  default: {}
+
+# Determines if the pipeline is deploying to production.
+- name: offical
+  type: boolean
+  default: false
+
+# Defines the required build pipeline stages.
+- name: stages
+  type: stageList
+  displayName: Stages
+
+# Defines the jobs which will run in the prereqs stage.
+- name: prereqs
+  type: jobList
+  default: []
+
+stages:
+
+# Link to the core template where all stages will be defined.
+- template: stages/core.yaml
+  parameters:
+    global: ${{ parameters.global }}
+    settings: ${{ parameters.settings }}
+    defaults: ${{ parameters.defaults }}
+    azure: ${{ parameters.azure }}
+    offical: ${{ parameters.offical }}
+    prereqs: ${{ parameters.prereqs }}
+    stages: ${{ parameters.stages }}

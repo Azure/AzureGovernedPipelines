@@ -1,0 +1,34 @@
+#
+# Tool configuration for Defender for DevOps.
+#
+
+parameters:
+
+# Set the break parameter to true to fail the pipeline if any of the checks fail.
+- name: break
+  type: boolean
+  default: false
+
+# Enable or disable upload of code analysis logs.
+- name: codeAnalysisLogs
+  type: boolean
+  default: true
+
+steps:
+
+# Add the Defender for DevOps task into the pipeline.
+- task: MicrosoftSecurityDevOps@1
+  displayName: Run Defender for DevOps scan
+  inputs:
+    break: ${{ parameters.break }}
+    publish: false
+
+# Copy SARIF results for upload to the pipeline artifacts.
+- ${{ if parameters.codeAnalysisLogs }}:
+  - task: CopyFiles@2
+    displayName: Copy Defender for DevOps results
+    inputs:
+      TargetFolder: $(GOV_PREREQS_RESULTS_PATH)
+      SourceFolder: $(Build.ArtifactStagingDirectory)/.gdn/
+      Contents: |
+        **/*.sarif
